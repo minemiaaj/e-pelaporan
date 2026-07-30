@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href=favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">    
     <title>Lapor Bang !! – Biro Administrasi Pembangunan Setda Prov. Sultra</title>
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -10,67 +12,67 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
-
-    <!-- ========== HERO SECTION ========== -->
-    <section class="hero" aria-label="Header Lapor Bang">
-        <div class="hero__badge">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-                <polyline points="9 22 9 12 15 12 15 22"/>
-            </svg>
-            <span>Bagian Pelaporan</span>
+    <!-- ========== HERO ========== -->
+    <header class="hero">
+        <div class="hero__bg" aria-hidden="true">
+            <div class="hero__shape hero__shape--1"></div>
+            <div class="hero__shape hero__shape--2"></div>
+            <div class="hero__grid"></div>
         </div>
 
-        <h1 class="hero__title">Lapor Bang !!</h1>
-        <p class="hero__subtitle">Biro Administrasi Pembangunan</p>
-        <p class="hero__org">Sekretariat Daerah Provinsi Sulawesi Tenggara</p>
+        <div class="hero__content">
+            <span class="hero__badge">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                    <polyline points="9 22 9 12 15 12 15 22"/>
+                </svg>
+                Bagian Pelaporan
+            </span>
 
-        <div class="hero__divider" aria-hidden="true">
-            <span></span>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="5" r="1"/>
-                <path d="M12 12v7"/>
-                <path d="m9 16 3-3 3 3"/>
-            </svg>
-            <span></span>
+            <h1 class="hero__title">Lapor Bang !!</h1>
+            <p class="hero__subtitle">Biro Administrasi Pembangunan</p>
+            <p class="hero__org">Sekretariat Daerah Provinsi Sulawesi Tenggara</p>
+
+            <div class="hero__divider" aria-hidden="true">
+                <span></span>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="5" r="1"/>
+                    <path d="M12 12v7"/>
+                    <path d="m9 16 3-3 3 3"/>
+                </svg>
+                <span></span>
+            </div>
+
+            <p class="hero__desc">
+                Portal layanan pelaporan dan analisis capaian pembangunan daerah yang terintegrasi,
+                mendukung perumusan rekomendasi kebijakan berbasis data.
+            </p>
+
+            <div class="hero__scroll">
+                <span>Scroll</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 5v14"/>
+                    <polyline points="19 12 12 19 5 12"/>
+                </svg>
+            </div>
         </div>
+    </header>
 
-        <p class="hero__desc">
-            Portal layanan pelaporan dan analisis capaian pembangunan daerah yang terintegrasi,
-            mendukung perumusan rekomendasi kebijakan berbasis data.
-        </p>
-
-        <div class="hero__scroll" aria-hidden="true">
-            <span>Scroll</span>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M12 5v14"/>
-                <polyline points="19 12 12 19 5 12"/>
-            </svg>
-        </div>
-
-        <!-- Decorative background shapes -->
-        <div class="hero__deco hero__deco--1" aria-hidden="true"></div>
-        <div class="hero__deco hero__deco--2" aria-hidden="true"></div>
-    </section>
-
-    <!-- ========== SERVICES SECTION ========== -->
-    <main class="services" aria-label="Layanan Pelaporan">
+    <!-- ========== MAIN CONTENT ========== -->
+    <main class="services">
         <div class="services__container">
-
             <div class="section-header">
-                <span class="section-header__pill">Layanan Kami</span>
+                <span class="section-header__tag">Layanan Kami</span>
                 <h2 class="section-header__title">Tiga Pilar Pelaporan Pembangunan</h2>
-                <p class="section-header__desc">
-                    Pilih layanan sesuai kebutuhan Anda untuk mendukung tata kelola pembangunan yang transparan dan akuntabel.
-                </p>
+                <p class="section-header__desc">Pilih layanan sesuai kebutuhan Anda untuk mendukung tata kelola pembangunan yang transparan dan akuntabel.</p>
             </div>
 
             <div class="card-grid">
-
                 <!-- Card 1: Analisis Capaian -->
-                <article class="card card--analisis">
-                    <div class="card__icon" aria-hidden="true">
-                        <svg viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <article class="card card--analisis fade-up">
+                    <div class="card__accent" aria-hidden="true"></div>
+                    <div class="card__icon">
+                        <svg viewBox="0 0 56 56" fill="none">
                             <rect x="6" y="34" width="10" height="16" rx="3" fill="currentColor" opacity="0.85"/>
                             <rect x="23" y="22" width="10" height="28" rx="3" fill="currentColor" opacity="0.9"/>
                             <rect x="40" y="10" width="10" height="40" rx="3" fill="currentColor"/>
@@ -79,117 +81,113 @@
                         </svg>
                     </div>
                     <div class="card__body">
-                        <span class="card__tag">Nalar</span>
+                        <span class="card__label">Nalar</span>
                         <h3 class="card__title">Analisis Capaian Pembangunan</h3>
-                        <p class="card__desc">
-                            Telusuri dan analisis data capaian pembangunan daerah secara mendalam dengan dukungan sistem <em>Nalar</em> yang cerdas dan terstruktur.
-                        </p>
+                        <p class="card__desc">Telusuri dan analisis data capaian pembangunan daerah secara mendalam dengan dukungan sistem <em>Nalar</em> yang cerdas dan terstruktur.</p>
                     </div>
-                    <a href="https://nalar-biroadbangsultra-prov.freedev.app"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="card__cta"
-                    aria-label="Buka aplikasi Analisis Capaian Pembangunan">
-                    Akses Nalar
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <path d="M7 17L17 7"/>
-                        <polyline points="7 7 17 7 17 17"/>
-                    </svg>
-                </a>
-            </article>
+                    <a href="https://nalar-biroadbangsultra-prov.freedev.app" target="_blank" rel="noopener noreferrer" class="card__cta">
+                        Akses Nalar
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M7 17L17 7"/>
+                            <polyline points="7 7 17 7 17 17"/>
+                        </svg>
+                    </a>
+                </article>
 
-            <!-- Card 2: Pelaporan Capaian -->
-            <article class="card card--pelaporan">
-                <div class="card__icon" aria-hidden="true">
-                    <svg viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <rect x="10" y="6" width="36" height="44" rx="5" fill="currentColor" opacity="0.9"/>
-                        <rect x="10" y="6" width="36" height="14" rx="5" fill="currentColor"/>
-                        <rect x="16" y="12" width="16" height="3" rx="1.5" fill="#fff" opacity="0.8"/>
-                        <rect x="16" y="19" width="10" height="2" rx="1" fill="#fff" opacity="0.5"/>
-                        <rect x="16" y="26" width="24" height="3" rx="1.5" fill="#fff" opacity="0.55"/>
-                        <rect x="16" y="33" width="20" height="3" rx="1.5" fill="#fff" opacity="0.4"/>
-                        <rect x="16" y="40" width="14" height="3" rx="1.5" fill="#fff" opacity="0.3"/>
-                        <circle cx="42" cy="10" r="4" fill="#f9c74f" stroke="#fff" stroke-width="2"/>
-                        <path d="M40.5 9.5L42 11l2.5-2.5" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-                    </svg>
-                </div>
-                <div class="card__body">
-                    <span class="card__tag">SiReKon</span>
-                    <h3 class="card__title">Pelaporan Capaian Pembangunan</h3>
-                    <p class="card__desc">
-                        Susun dan sampaikan laporan capaian pembangunan secara efisien melalui platform <em>SiReKon</em> yang terstandarisasi.
-                    </p>
-                </div>
-                <a href="https://sirekon-biroadbangsultra-prov.freedev.app"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="card__cta"
-                aria-label="Buka aplikasi Pelaporan Capaian Pembangunan">
-                Akses SiReKon
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <path d="M7 17L17 7"/>
-                    <polyline points="7 7 17 7 17 17"/>
-                </svg>
-            </a>
-        </article>
+                <!-- Card 2: Pelaporan Capaian -->
+                <article class="card card--pelaporan fade-up">
+                    <div class="card__accent" aria-hidden="true"></div>
+                    <div class="card__icon">
+                        <svg viewBox="0 0 56 56" fill="none">
+                            <rect x="10" y="6" width="36" height="44" rx="5" fill="currentColor" opacity="0.9"/>
+                            <rect x="10" y="6" width="36" height="14" rx="5" fill="currentColor"/>
+                            <rect x="16" y="12" width="16" height="3" rx="1.5" fill="#fff" opacity="0.8"/>
+                            <rect x="16" y="19" width="10" height="2" rx="1" fill="#fff" opacity="0.5"/>
+                            <rect x="16" y="26" width="24" height="3" rx="1.5" fill="#fff" opacity="0.55"/>
+                            <rect x="16" y="33" width="20" height="3" rx="1.5" fill="#fff" opacity="0.4"/>
+                            <rect x="16" y="40" width="14" height="3" rx="1.5" fill="#fff" opacity="0.3"/>
+                            <circle cx="42" cy="10" r="4" fill="#f9c74f" stroke="#fff" stroke-width="2"/>
+                            <path d="M40.5 9.5L42 11l2.5-2.5" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                        </svg>
+                    </div>
+                    <div class="card__body">
+                        <span class="card__label">SiREKON</span>
+                        <h3 class="card__title">Pelaporan Capaian Pembangunan</h3>
+                        <p class="card__desc">Susun dan sampaikan laporan capaian pembangunan secara efisien melalui platform <em>SiREKON</em> yang terstandarisasi.</p>
+                    </div>
+                    <a href="https://sirekon-biroadbangsultra-prov.freedev.app" target="_blank" rel="noopener noreferrer" class="card__cta">
+                        Akses SiREKON
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M7 17L17 7"/>
+                            <polyline points="7 7 17 7 17 17"/>
+                        </svg>
+                    </a>
+                </article>
 
-        <!-- Card 3: Rekomendasi Kebijakan -->
-        <article class="card card--rekomendasi card--placeholder">
-            <div class="card__icon" aria-hidden="true">
-                <svg viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="28" cy="28" r="22" fill="currentColor" opacity="0.15"/>
-                    <circle cx="28" cy="28" r="14" fill="currentColor" opacity="0.5"/>
-                    <circle cx="28" cy="22" r="5" fill="currentColor"/>
-                    <path d="M28 30v7" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
-                    <circle cx="28" cy="41" r="2" fill="currentColor"/>
-                    <circle cx="19" cy="17" r="2.5" fill="#fff" opacity="0.6"/>
-                    <circle cx="38" cy="15" r="2" fill="#fff" opacity="0.5"/>
-                    <circle cx="15" cy="34" r="1.8" fill="#fff" opacity="0.45"/>
-                    <circle cx="40" cy="36" r="2.2" fill="#fff" opacity="0.55"/>
-                </svg>
+                <!-- Card 3: Rekomendasi Kebijakan -->
+                <article class="card card--rekomendasi card--placeholder fade-up">
+                    <div class="card__accent" aria-hidden="true"></div>
+                    <div class="card__icon">
+                        <svg viewBox="0 0 56 56" fill="none">
+                            <circle cx="28" cy="28" r="22" fill="currentColor" opacity="0.15"/>
+                            <circle cx="28" cy="28" r="14" fill="currentColor" opacity="0.5"/>
+                            <circle cx="28" cy="22" r="5" fill="currentColor"/>
+                            <path d="M28 30v7" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+                            <circle cx="28" cy="41" r="2" fill="currentColor"/>
+                            <circle cx="19" cy="17" r="2.5" fill="#fff" opacity="0.6"/>
+                            <circle cx="38" cy="15" r="2" fill="#fff" opacity="0.5"/>
+                            <circle cx="15" cy="34" r="1.8" fill="#fff" opacity="0.45"/>
+                            <circle cx="40" cy="36" r="2.2" fill="#fff" opacity="0.55"/>
+                        </svg>
+                    </div>
+                    <div class="card__body">
+                        <span class="card__label card__label--soon">Segera Hadir</span>
+                        <h3 class="card__title">Rekomendasi Kebijakan</h3>
+                        <p class="card__desc">Dapatkan rekomendasi kebijakan pembangunan berbasis hasil analisis dan pelaporan yang komprehensif. Layanan ini sedang dalam tahap pengembangan.</p>
+                    </div>
+                    <button class="card__cta card__cta--disabled" disabled>
+                        Segera Hadir
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="11" width="18" height="11" rx="2"/>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                        </svg>
+                    </button>
+                </article>
             </div>
-            <div class="card__body">
-                <span class="card__tag card__tag--soon">Segera Hadir</span>
-                <h3 class="card__title">Rekomendasi Kebijakan</h3>
-                <p class="card__desc">
-                    Dapatkan rekomendasi kebijakan pembangunan berbasis hasil analisis dan pelaporan yang komprehensif. Layanan ini sedang dalam tahap pengembangan.
-                </p>
+        </div>
+    </main>
+
+    <!-- ========== FOOTER ========== -->
+    <footer class="footer">
+        <div class="footer__container">
+            <div class="footer__brand">
+                <span class="footer__logo">Lapor Bang !!</span>
+                <p>Biro Administrasi Pembangunan<br>Sekretariat Daerah Provinsi Sulawesi Tenggara</p>
             </div>
-            <button class="card__cta card__cta--disabled" disabled aria-label="Layanan Rekomendasi Kebijakan segera hadir">
-                Segera Hadir
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <rect x="3" y="11" width="18" height="11" rx="2"/>
-                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                </svg>
-            </button>
-        </article>
-
-    </div>
-</div>
-</main>
-
-<!-- ========== FOOTER ========== -->
-<footer class="footer" aria-label="Footer">
-    <div class="footer__container">
-        <div class="footer__brand">
-            <span class="footer__logo-text">Lapor Bang !!</span>
-            <p>Biro Administrasi Pembangunan<br>Sekretariat Daerah Provinsi Sulawesi Tenggara</p>
+            <div class="footer__nav">
+                <a href="https://nalar-biroadbangsultra-prov.freedev.app" target="_blank" rel="noopener">Nalar</a>
+                <span class="footer__separator">·</span>
+                <a href="https://sirekon-biroadbangsultra-prov.freedev.app" target="_blank" rel="noopener">SiREKON</a>
+                <span class="footer__separator">·</span>
+                <span class="footer__placeholder">Rekomendasi (soon)</span>
+            </div>
+            <p class="footer__copy">&copy; <span id="year"></span> Biro Administrasi Pembangunan Setda Prov. Sultra. Hak Cipta Dilindungi.</p>
         </div>
-        <div class="footer__links">
-            <a href="https://nalar-biroadbangsultra-prov.freedev.app" target="_blank" rel="noopener noreferrer">Nalar</a>
-            <span class="footer__dot" aria-hidden="true">·</span>
-            <a href="https://sirekon-biroadbangsultra-prov.freedev.app" target="_blank" rel="noopener noreferrer">SiReKon</a>
-            <span class="footer__dot" aria-hidden="true">·</span>
-            <span class="footer__placeholder-link">Rekomendasi (soon)</span>
-        </div>
-        <p class="footer__copy">&copy; <span id="year"></span> Biro Administrasi Pembangunan Setda Prov. Sultra. Hak Cipta Dilindungi.</p>
-    </div>
-</footer>
+    </footer>
 
-<script>
-    // Auto-update copyright year
-    document.getElementById('year').textContent = new Date().getFullYear();
-</script>
+    <script>
+        document.getElementById('year').textContent = new Date().getFullYear();
 
+        // Simple fade-up animation on scroll (optional graceful)
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.15 });
+
+        document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+    </script>
 </body>
 </html>
