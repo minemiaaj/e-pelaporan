@@ -243,10 +243,12 @@
     <!-- ========== GRAFIK STATISTIK (SiREKON) ========== -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js" defer></script>
     <script>
-        // TODO: ganti dengan URL API dashboard_publik.php setelah di-deploy
-        // di server SiREKON, misalnya:
-        // https://sirekon-biroadbangsultra-prov.freedev.app/api/dashboard_publik.php
-        const SIREKON_API_BASE = 'https://sirekon-biroadbangsultra-prov.freedev.app/api/dashboard_publik.php';
+        // Frontend memanggil proxy di domain sendiri (Vercel), BUKAN langsung
+        // ke domain SiREKON - ini menghindari blokir CORS di hosting SiREKON,
+        // karena request browser->Vercel selalu same-origin (tidak butuh CORS),
+        // dan request Vercel->SiREKON dilakukan server-to-server (lihat
+        // /api/sirekon-proxy.js).
+        const SIREKON_API_BASE = '/api/sirekon-proxy';
 
         const goldColor = '#c2943b';
         const blueColor = '#0f3d6b';
