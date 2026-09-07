@@ -241,15 +241,48 @@
     </script>
 
     <!-- ========== GRAFIK STATISTIK (SiREKON) ========== -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js" defer></script>
+    <script>
+        // Muat Chart.js secara dinamis dengan beberapa CDN cadangan, supaya
+        // tidak gagal total kalau satu CDN sedang bermasalah/diblokir.
+        // Fungsi render chart HANYA dipanggil setelah loadChartJs() benar-benar
+        // resolve (Chart terkonfirmasi tersedia), tidak lagi menebak-nebak
+        // lewat event 'load'.
+        function loadChartJs() {
+            if (window.Chart) {
+                return Promise.resolve();
+            }
+            const cdnUrls = [
+                'https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js',
+                'https://unpkg.com/chart.js@4.4.4/dist/chart.umd.min.js',
+            ];
+
+            function tryLoad(index) {
+                if (index >= cdnUrls.length) {
+                    return Promise.reject(new Error('Semua sumber Chart.js gagal dimuat.'));
+                }
+                return new Promise((resolve, reject) => {
+                    const script = document.createElement('script');
+                    script.src = cdnUrls[index];
+                    script.onload = () => (window.Chart ? resolve() : reject(new Error('Chart.js dimuat tapi objek Chart tidak ditemukan.')));
+                    script.onerror = () => reject(new Error(`Gagal memuat: ${cdnUrls[index]}`));
+                    document.head.appendChild(script);
+                }).catch((err) => {
+                    console.warn(err.message, '- mencoba CDN berikutnya...');
+                    return tryLoad(index + 1);
+                });
+            }
+            return tryLoad(0);
+        }
+    </script>
     <script>
         // Frontend fetch LANGSUNG ke Supabase (bukan lagi ke SiREKON/InfinityFree
         // sama sekali) - data didorong secara otomatis oleh SiREKON setiap kali
         // staf login membuka dashboard (lihat sync_supabase.php di server SiREKON).
         // Supabase REST API sudah mendukung CORS untuk semua origin secara default,
         // jadi tidak ada lagi isu blokir anti-bot / CORS yang perlu diakali.
-        const SUPABASE_URL      = 'https://hnjggapufkaunajieuln.supabase.co'; // TODO: ganti sesuai project Supabase
-        const SUPABASE_ANON_KEY = 'sb_publishable_OL1jZLyqyZmCO29xhVKKCA_26xxwvDo';       // TODO: ganti - ini aman ditaruh di frontend (read-only)
+        const SUPABASE_URL      = 'https://xxxxxxxxxxxx.supabase.co'; // TODO: ganti sesuai project Supabase
+        const SUPABASE_ANON_KEY = 'isi-anon-public-key-di-sini';       // TODO: ganti - ini aman ditaruh di frontend (read-only)
 
         const goldColor = '#c2943b';
         const blueColor = '#0f3d6b';
@@ -402,18 +435,18 @@
         }
 
         window.addEventListener('DOMContentLoaded', () => {
-            if (typeof Chart === 'undefined') {
-                // Chart.js belum sempat load (defer) - tunggu event load
-                window.addEventListener('load', () => {
+            loadChartJs()
+                .then(() => {
                     renderRingkasan();
                     renderTren();
                     renderStatus();
+                })
+                .catch((err) => {
+                    console.error('Chart.js gagal dimuat dari semua CDN:', err);
+                    ['state-ringkasan', 'state-tren', 'state-status'].forEach((id) =>
+                        setState(id, 'Gagal memuat komponen grafik. Coba muat ulang halaman.', true)
+                    );
                 });
-            } else {
-                renderRingkasan();
-                renderTren();
-                renderStatus();
-            }
         });
     </script>
 </body>
