@@ -167,13 +167,13 @@
             </div>
 
             <div class="stats-grid">
-                <!-- Kartu 1: Pagu vs Realisasi per OPD -->
-                <div class="stat-card fade-up">
+                <!-- Kartu 1: Pagu vs Realisasi per OPD (lebar penuh - datanya bisa banyak) -->
+                <div class="stat-card stat-card--wide fade-up">
                     <div class="stat-card__head">
                         <h3 class="stat-card__title">Realisasi Anggaran per OPD</h3>
                         <span class="stat-card__period" id="stat-ringkasan-periode">&nbsp;</span>
                     </div>
-                    <div class="stat-card__body">
+                    <div class="stat-card__body stat-card__body--scroll">
                         <canvas id="chart-ringkasan" role="img" aria-label="Grafik persentase realisasi anggaran per OPD"></canvas>
                         <div class="stat-card__state" id="state-ringkasan">Memuat data...</div>
                     </div>
@@ -329,9 +329,17 @@
                 setState('state-ringkasan', '');
                 document.getElementById('stat-ringkasan-periode').textContent = data.periode_label || '';
                 document.getElementById('stat-ringkasan-total').textContent =
-                    `Total realisasi ${formatRupiah(data.total_realisasi)} dari pagu ${formatRupiah(data.total_pagu)} (${data.persen_realisasi}%)`;
+                    `Total realisasi ${formatRupiah(data.total_realisasi)} dari pagu ${formatRupiah(data.total_pagu)} (${data.persen_realisasi}%) - ${data.per_opd.length} OPD`;
 
-                new Chart(document.getElementById('chart-ringkasan'), {
+                const canvasEl = document.getElementById('chart-ringkasan');
+                // Tinggi menyesuaikan jumlah OPD (bukan lagi dibatasi 8 teratas),
+                // supaya tiap batang tetap terbaca jelas - area kartu bisa di-scroll.
+                const PX_PER_OPD = 26;
+                const MIN_HEIGHT = 260;
+                canvasEl.style.height = Math.max(MIN_HEIGHT, data.per_opd.length * PX_PER_OPD) + 'px';
+                canvasEl.style.width = '100%';
+
+                new Chart(canvasEl, {
                     type: 'bar',
                     data: {
                         labels: data.per_opd.map(d => d.opd),
