@@ -45,7 +45,16 @@ export default async function handler(req, res) {
     try {
         const upstreamRes = await fetch(`${SIREKON_UPSTREAM}?type=${encodeURIComponent(type)}`, {
             method: 'GET',
-            headers: { Accept: 'application/json' },
+            headers: {
+                // Header dibuat menyerupai kunjungan browser biasa (bukan
+                // header khas klien API/bot seperti "Accept: application/json"),
+                // karena hosting SiREKON tampaknya memblokir request yang
+                // terlihat seperti scraper/bot di level proxy (openresty).
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                'Accept-Language': 'id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7',
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36',
+                'Referer': 'https://sirekon-biroadbangsultra-prov.freedev.app/',
+            },
             // Timeout manual via AbortController supaya tidak menggantung lama
             signal: AbortSignal.timeout(10000),
         });
@@ -65,6 +74,8 @@ export default async function handler(req, res) {
             return res.status(502).json({
                 success: false,
                 error: 'Respons dari SiREKON tidak valid (bukan JSON). Kemungkinan diblokir di sisi hosting SiREKON.',
+                upstream_status: upstreamRes.status,
+                upstream_body_snippet: text.slice(0, 500), // cuplikan buat diagnosis, aman krn tdk ada data sensitif
             });
         }
 
