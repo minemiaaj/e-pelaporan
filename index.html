@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href=favicon.ico" type="image/x-icon">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">    
     <title>Lapor Bang !! – Biro Administrasi Pembangunan Setda Prov. Sultra</title>
     <link rel="stylesheet" href="style.css">
@@ -157,6 +157,56 @@
         </div>
     </main>
 
+    <!-- ========== STATISTIK / GRAFIK SIREKON ========== -->
+    <section class="stats" id="statistik">
+        <div class="stats__container">
+            <div class="section-header">
+                <span class="section-header__tag">Data Real-time</span>
+                <h2 class="section-header__title">Statistik Pembangunan Daerah</h2>
+                <p class="section-header__desc">Ringkasan capaian pembangunan yang ditarik langsung dari sistem <em>SiREKON</em>, diperbarui otomatis secara berkala.</p>
+            </div>
+
+            <div class="stats-grid">
+                <!-- Kartu 1: Pagu vs Realisasi per OPD -->
+                <div class="stat-card fade-up">
+                    <div class="stat-card__head">
+                        <h3 class="stat-card__title">Realisasi Anggaran per OPD</h3>
+                        <span class="stat-card__period" id="stat-ringkasan-periode">&nbsp;</span>
+                    </div>
+                    <div class="stat-card__body">
+                        <canvas id="chart-ringkasan" role="img" aria-label="Grafik persentase realisasi anggaran per OPD"></canvas>
+                        <div class="stat-card__state" id="state-ringkasan">Memuat data...</div>
+                    </div>
+                    <div class="stat-card__foot" id="stat-ringkasan-total">&nbsp;</div>
+                </div>
+
+                <!-- Kartu 2: Tren realisasi bulanan -->
+                <div class="stat-card fade-up">
+                    <div class="stat-card__head">
+                        <h3 class="stat-card__title">Tren Realisasi Bulanan</h3>
+                        <span class="stat-card__period" id="stat-tren-periode">&nbsp;</span>
+                    </div>
+                    <div class="stat-card__body">
+                        <canvas id="chart-tren" role="img" aria-label="Grafik tren realisasi keuangan per bulan"></canvas>
+                        <div class="stat-card__state" id="state-tren">Memuat data...</div>
+                    </div>
+                </div>
+
+                <!-- Kartu 3: Status pelaksanaan proyek -->
+                <div class="stat-card fade-up">
+                    <div class="stat-card__head">
+                        <h3 class="stat-card__title">Status Pelaksanaan Proyek</h3>
+                        <span class="stat-card__period">Seluruh Paket</span>
+                    </div>
+                    <div class="stat-card__body">
+                        <canvas id="chart-status" role="img" aria-label="Grafik status pelaksanaan proyek"></canvas>
+                        <div class="stat-card__state" id="state-status">Memuat data...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- ========== FOOTER ========== -->
     <footer class="footer">
         <div class="footer__container">
@@ -188,6 +238,183 @@
         }, { threshold: 0.15 });
 
         document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+    </script>
+
+    <!-- ========== GRAFIK STATISTIK (SiREKON) ========== -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js" defer></script>
+    <script>
+        // Frontend fetch LANGSUNG ke Supabase (bukan lagi ke SiREKON/InfinityFree
+        // sama sekali) - data didorong secara otomatis oleh SiREKON setiap kali
+        // staf login membuka dashboard (lihat sync_supabase.php di server SiREKON).
+        // Supabase REST API sudah mendukung CORS untuk semua origin secara default,
+        // jadi tidak ada lagi isu blokir anti-bot / CORS yang perlu diakali.
+        const SUPABASE_URL      = 'https://hnjggapufkaunajieuln.supabase.co'; // TODO: ganti sesuai project Supabase
+        const SUPABASE_ANON_KEY = 'sb_publishable_OL1jZLyqyZmCO29xhVKKCA_26xxwvDo';       // TODO: ganti - ini aman ditaruh di frontend (read-only)
+
+        const goldColor = '#c2943b';
+        const blueColor = '#0f3d6b';
+        const blueLight = '#1d659e';
+        const grayColor = '#94a3b8';
+
+        function formatRupiah(angka) {
+            if (angka >= 1e12) return 'Rp ' + (angka / 1e12).toFixed(2) + ' T';
+            if (angka >= 1e9)  return 'Rp ' + (angka / 1e9).toFixed(2) + ' M';
+            if (angka >= 1e6)  return 'Rp ' + (angka / 1e6).toFixed(2) + ' Jt';
+            return 'Rp ' + angka.toLocaleString('id-ID');
+        }
+
+        function setState(elId, message, isError = false) {
+            const el = document.getElementById(elId);
+            if (!el) return;
+            el.textContent = message;
+            el.style.display = message ? 'flex' : 'none';
+            el.classList.toggle('stat-card__state--error', isError);
+        }
+
+        async function fetchChartData(type) {
+            const url = `${SUPABASE_URL}/rest/v1/dashboard_publik?type=eq.${encodeURIComponent(type)}&select=payload,updated_at`;
+            const res = await fetch(url, {
+                headers: {
+                    'apikey': SUPABASE_ANON_KEY,
+                    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                    'Accept': 'application/json'
+                }
+            });
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const rows = await res.json();
+            if (!rows.length) throw new Error('Data belum tersedia di Supabase.');
+            return rows[0].payload;
+        }
+
+        async function renderRingkasan() {
+            try {
+                const data = await fetchChartData('ringkasan');
+                if (!data.per_opd || data.per_opd.length === 0) {
+                    setState('state-ringkasan', 'Belum ada data untuk periode ini.');
+                    return;
+                }
+                setState('state-ringkasan', '');
+                document.getElementById('stat-ringkasan-periode').textContent = data.periode_label || '';
+                document.getElementById('stat-ringkasan-total').textContent =
+                    `Total realisasi ${formatRupiah(data.total_realisasi)} dari pagu ${formatRupiah(data.total_pagu)} (${data.persen_realisasi}%)`;
+
+                new Chart(document.getElementById('chart-ringkasan'), {
+                    type: 'bar',
+                    data: {
+                        labels: data.per_opd.map(d => d.opd),
+                        datasets: [{
+                            label: 'Realisasi (%)',
+                            data: data.per_opd.map(d => d.persen_realisasi),
+                            backgroundColor: blueColor,
+                            borderRadius: 6,
+                            maxBarThickness: 28
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            x: { beginAtZero: true, max: 100, ticks: { callback: v => v + '%' } }
+                        }
+                    }
+                });
+            } catch (err) {
+                console.error('Ringkasan error:', err);
+                setState('state-ringkasan', 'Data belum tersedia saat ini.', true);
+            }
+        }
+
+        async function renderTren() {
+            try {
+                const data = await fetchChartData('tren');
+                if (!data.labels || data.labels.length === 0) {
+                    setState('state-tren', 'Belum ada data tren untuk tahun ini.');
+                    return;
+                }
+                setState('state-tren', '');
+                document.getElementById('stat-tren-periode').textContent = `Tahun ${data.tahun}`;
+
+                new Chart(document.getElementById('chart-tren'), {
+                    type: 'line',
+                    data: {
+                        labels: data.labels,
+                        datasets: [{
+                            label: 'Realisasi',
+                            data: data.realisasi,
+                            borderColor: goldColor,
+                            backgroundColor: 'rgba(194,148,59,0.15)',
+                            fill: true,
+                            tension: 0.35,
+                            pointRadius: 3
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: { callbacks: { label: ctx => formatRupiah(ctx.parsed.y) } }
+                        },
+                        scales: {
+                            y: { ticks: { callback: v => formatRupiah(v) } }
+                        }
+                    }
+                });
+            } catch (err) {
+                console.error('Tren error:', err);
+                setState('state-tren', 'Data belum tersedia saat ini.', true);
+            }
+        }
+
+        async function renderStatus() {
+            try {
+                const data = await fetchChartData('status');
+                const s = data.status_proyek || {};
+                const total = (s.planned || 0) + (s.ongoing || 0) + (s.complete || 0);
+                if (!total) {
+                    setState('state-status', 'Belum ada data proyek.');
+                    return;
+                }
+                setState('state-status', '');
+
+                new Chart(document.getElementById('chart-status'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Selesai', 'Berjalan', 'Direncanakan'],
+                        datasets: [{
+                            data: [s.complete || 0, s.ongoing || 0, s.planned || 0],
+                            backgroundColor: [blueColor, blueLight, grayColor],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, padding: 14 } } }
+                    }
+                });
+            } catch (err) {
+                console.error('Status error:', err);
+                setState('state-status', 'Data belum tersedia saat ini.', true);
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            if (typeof Chart === 'undefined') {
+                // Chart.js belum sempat load (defer) - tunggu event load
+                window.addEventListener('load', () => {
+                    renderRingkasan();
+                    renderTren();
+                    renderStatus();
+                });
+            } else {
+                renderRingkasan();
+                renderTren();
+                renderStatus();
+            }
+        });
     </script>
 </body>
 </html>
