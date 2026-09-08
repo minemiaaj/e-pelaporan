@@ -283,7 +283,7 @@
         // jadi tidak ada lagi isu blokir anti-bot / CORS yang perlu diakali.
         const SUPABASE_URL      = 'https://hnjggapufkaunajieuln.supabase.co'; // TODO: ganti sesuai project Supabase
         const SUPABASE_ANON_KEY = 'sb_publishable_OL1jZLyqyZmCO29xhVKKCA_26xxwvDo';       // TODO: ganti - ini aman ditaruh di frontend (read-only)
-
+        
         const goldColor = '#c2943b';
         const blueColor = '#0f3d6b';
         const blueLight = '#1d659e';
@@ -334,19 +334,26 @@
                     `Total realisasi ${formatRupiah(data.total_realisasi)} dari pagu ${formatRupiah(data.total_pagu)} (${data.persen_realisasi}%)`;
 
                 const canvasEl = document.getElementById('chart-ringkasan');
-                const combined = [...top, ...bottom];
-                const PX_PER_OPD = 26;
-                const MIN_HEIGHT = 260;
-                canvasEl.style.height = Math.max(MIN_HEIGHT, combined.length * PX_PER_OPD) + 'px';
+                // Sisipkan satu baris kosong sebagai pemisah visual antara
+                // kelompok "5 Tertinggi" dan "5 Terendah" agar lebih mudah dibaca.
+                const hasBothGroups = top.length > 0 && bottom.length > 0;
+                const combined = hasBothGroups ? [...top, { opd: '', persen_realisasi: null }, ...bottom] : [...top, ...bottom];
+                const spacerCount = hasBothGroups ? 1 : 0;
+                // Ruang per batang + ruang tetap untuk sumbu-X dan legenda di bawah,
+                // supaya semua label OPD selalu muat penuh dan tidak dipotong Chart.js.
+                const PX_PER_OPD = 34;
+                const FIXED_CHROME = 90; // sumbu-x + legenda + padding atas-bawah
+                canvasEl.style.height = (combined.length * PX_PER_OPD + FIXED_CHROME) + 'px';
                 canvasEl.style.width = '100%';
 
                 const labels = combined.map(d => d.opd);
-                // Dataset "Tertinggi" hanya berisi nilai pada posisi 0..top.length-1,
+                // Dataset "Tertinggi" hanya berisi nilai pada posisi kelompok atas,
                 // sisanya null (tidak digambar) - begitu juga sebaliknya untuk
                 // "Terendah" - supaya kedua kelompok tampil di satu chart yang sama
                 // dengan legenda yang jelas, tanpa saling tumpang tindih.
-                const topValues = combined.map((d, i) => (i < top.length ? d.persen_realisasi : null));
-                const bottomValues = combined.map((d, i) => (i >= top.length ? d.persen_realisasi : null));
+                const topCount = top.length;
+                const topValues = combined.map((d, i) => (i < topCount ? d.persen_realisasi : null));
+                const bottomValues = combined.map((d, i) => (i >= topCount + spacerCount ? d.persen_realisasi : null));
 
                 new Chart(canvasEl, {
                     type: 'bar',
@@ -358,14 +365,16 @@
                                 data: topValues,
                                 backgroundColor: blueColor,
                                 borderRadius: 6,
-                                maxBarThickness: 28
+                                barPercentage: 0.85,
+                                categoryPercentage: 0.7
                             },
                             {
                                 label: '5 Terendah',
                                 data: bottomValues,
                                 backgroundColor: goldColor,
                                 borderRadius: 6,
-                                maxBarThickness: 28
+                                barPercentage: 0.85,
+                                categoryPercentage: 0.7
                             }
                         ]
                     },
@@ -373,13 +382,17 @@
                         indexAxis: 'y',
                         responsive: true,
                         maintainAspectRatio: false,
+                        layout: { padding: { right: 16 } },
                         plugins: {
-                            legend: { display: true, position: 'bottom', labels: { boxWidth: 12, padding: 14 } },
+                            legend: { display: true, position: 'bottom', labels: { boxWidth: 12, padding: 16 } },
                             tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${ctx.parsed.x}%` } }
                         },
                         scales: {
                             x: { beginAtZero: true, max: 100, ticks: { callback: v => v + '%' } },
-                            y: { stacked: false }
+                            y: {
+                                stacked: false,
+                                ticks: { autoSkip: false, font: { size: 12 } }
+                            }
                         }
                     }
                 });
