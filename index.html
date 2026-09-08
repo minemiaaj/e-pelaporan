@@ -170,7 +170,7 @@
                 <!-- Kartu 1: Pagu vs Realisasi per OPD (lebar penuh - datanya bisa banyak) -->
                 <div class="stat-card stat-card--wide fade-up">
                     <div class="stat-card__head">
-                        <h3 class="stat-card__title">Realisasi Anggaran per OPD</h3>
+                        <h3 class="stat-card__title">Realisasi Anggaran per OPD (5 Tertinggi &amp; Terendah)</h3>
                         <span class="stat-card__period" id="stat-ringkasan-periode">&nbsp;</span>
                     </div>
                     <div class="stat-card__body stat-card__body--scroll">
@@ -322,42 +322,64 @@
         async function renderRingkasan() {
             try {
                 const data = await fetchChartData('ringkasan');
-                if (!data.per_opd || data.per_opd.length === 0) {
+                const top = data.top_opd || [];
+                const bottom = data.bottom_opd || [];
+                if (top.length === 0 && bottom.length === 0) {
                     setState('state-ringkasan', 'Belum ada data untuk periode ini.');
                     return;
                 }
                 setState('state-ringkasan', '');
                 document.getElementById('stat-ringkasan-periode').textContent = data.periode_label || '';
                 document.getElementById('stat-ringkasan-total').textContent =
-                    `Total realisasi ${formatRupiah(data.total_realisasi)} dari pagu ${formatRupiah(data.total_pagu)} (${data.persen_realisasi}%) - ${data.per_opd.length} OPD`;
+                    `Total realisasi ${formatRupiah(data.total_realisasi)} dari pagu ${formatRupiah(data.total_pagu)} (${data.persen_realisasi}%)`;
 
                 const canvasEl = document.getElementById('chart-ringkasan');
-                // Tinggi menyesuaikan jumlah OPD (bukan lagi dibatasi 8 teratas),
-                // supaya tiap batang tetap terbaca jelas - area kartu bisa di-scroll.
+                const combined = [...top, ...bottom];
                 const PX_PER_OPD = 26;
                 const MIN_HEIGHT = 260;
-                canvasEl.style.height = Math.max(MIN_HEIGHT, data.per_opd.length * PX_PER_OPD) + 'px';
+                canvasEl.style.height = Math.max(MIN_HEIGHT, combined.length * PX_PER_OPD) + 'px';
                 canvasEl.style.width = '100%';
+
+                const labels = combined.map(d => d.opd);
+                // Dataset "Tertinggi" hanya berisi nilai pada posisi 0..top.length-1,
+                // sisanya null (tidak digambar) - begitu juga sebaliknya untuk
+                // "Terendah" - supaya kedua kelompok tampil di satu chart yang sama
+                // dengan legenda yang jelas, tanpa saling tumpang tindih.
+                const topValues = combined.map((d, i) => (i < top.length ? d.persen_realisasi : null));
+                const bottomValues = combined.map((d, i) => (i >= top.length ? d.persen_realisasi : null));
 
                 new Chart(canvasEl, {
                     type: 'bar',
                     data: {
-                        labels: data.per_opd.map(d => d.opd),
-                        datasets: [{
-                            label: 'Realisasi (%)',
-                            data: data.per_opd.map(d => d.persen_realisasi),
-                            backgroundColor: blueColor,
-                            borderRadius: 6,
-                            maxBarThickness: 28
-                        }]
+                        labels,
+                        datasets: [
+                            {
+                                label: '5 Tertinggi',
+                                data: topValues,
+                                backgroundColor: blueColor,
+                                borderRadius: 6,
+                                maxBarThickness: 28
+                            },
+                            {
+                                label: '5 Terendah',
+                                data: bottomValues,
+                                backgroundColor: goldColor,
+                                borderRadius: 6,
+                                maxBarThickness: 28
+                            }
+                        ]
                     },
                     options: {
                         indexAxis: 'y',
                         responsive: true,
                         maintainAspectRatio: false,
-                        plugins: { legend: { display: false } },
+                        plugins: {
+                            legend: { display: true, position: 'bottom', labels: { boxWidth: 12, padding: 14 } },
+                            tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${ctx.parsed.x}%` } }
+                        },
                         scales: {
-                            x: { beginAtZero: true, max: 100, ticks: { callback: v => v + '%' } }
+                            x: { beginAtZero: true, max: 100, ticks: { callback: v => v + '%' } },
+                            y: { stacked: false }
                         }
                     }
                 });
