@@ -173,6 +173,16 @@
                         <h3 class="stat-card__title">Realisasi Anggaran per OPD (5 Tertinggi &amp; Terendah)</h3>
                         <span class="stat-card__period" id="stat-ringkasan-periode">&nbsp;</span>
                     </div>
+                    <div class="stat-card__legend">
+                        <span class="stat-card__legend-item">
+                            <span class="stat-card__legend-dot" style="background:#0f3d6b;"></span>
+                            5 Realisasi Tertinggi
+                        </span>
+                        <span class="stat-card__legend-item">
+                            <span class="stat-card__legend-dot" style="background:#c2943b;"></span>
+                            5 Realisasi Terendah
+                        </span>
+                    </div>
                     <div class="stat-card__body stat-card__body--scroll">
                         <canvas id="chart-ringkasan" role="img" aria-label="Grafik persentase realisasi anggaran per OPD"></canvas>
                         <div class="stat-card__state" id="state-ringkasan">Memuat data...</div>
@@ -334,49 +344,41 @@
                     `Total realisasi ${formatRupiah(data.total_realisasi)} dari pagu ${formatRupiah(data.total_pagu)} (${data.persen_realisasi}%)`;
 
                 const canvasEl = document.getElementById('chart-ringkasan');
-                // Sisipkan satu baris kosong sebagai pemisah visual antara
-                // kelompok "5 Tertinggi" dan "5 Terendah" agar lebih mudah dibaca.
-                const hasBothGroups = top.length > 0 && bottom.length > 0;
-                const combined = hasBothGroups ? [...top, { opd: '', persen_realisasi: null }, ...bottom] : [...top, ...bottom];
-                const spacerCount = hasBothGroups ? 1 : 0;
-                // Ruang per batang + ruang tetap untuk sumbu-X dan legenda di bawah,
-                // supaya semua label OPD selalu muat penuh dan tidak dipotong Chart.js.
-                const PX_PER_OPD = 34;
-                const FIXED_CHROME = 90; // sumbu-x + legenda + padding atas-bawah
-                canvasEl.style.height = (combined.length * PX_PER_OPD + FIXED_CHROME) + 'px';
-                canvasEl.style.width = '100%';
+                const wrapEl = canvasEl.parentElement; // .stat-card__body--scroll
 
+                // Sisipkan satu baris kosong sebagai pemisah visual antara
+                // kelompok "5 Tertinggi" dan "5 Terendah".
+                const hasBothGroups = top.length > 0 && bottom.length > 0;
+                const combined = hasBothGroups
+                    ? [...top, { opd: '', persen_realisasi: null }, ...bottom]
+                    : [...top, ...bottom];
+
+                // Satu dataset saja (bukan 2 dataset ber-null) supaya setiap batang
+                // mendapat alokasi ruang penuh per kategori - lebih proporsional
+                // dan tidak terlihat kurus/rapat. Warna dibedakan per-indeks.
                 const labels = combined.map(d => d.opd);
-                // Dataset "Tertinggi" hanya berisi nilai pada posisi kelompok atas,
-                // sisanya null (tidak digambar) - begitu juga sebaliknya untuk
-                // "Terendah" - supaya kedua kelompok tampil di satu chart yang sama
-                // dengan legenda yang jelas, tanpa saling tumpang tindih.
-                const topCount = top.length;
-                const topValues = combined.map((d, i) => (i < topCount ? d.persen_realisasi : null));
-                const bottomValues = combined.map((d, i) => (i >= topCount + spacerCount ? d.persen_realisasi : null));
+                const values = combined.map(d => d.persen_realisasi);
+                const colors = combined.map((d, i) => (i < top.length ? blueColor : goldColor));
+
+                // Tinggi KONTAINER (bukan canvas) dihitung dari jumlah baris,
+                // supaya semua label OPD pasti muat dan tidak dipotong Chart.js.
+                const PX_PER_BAR = 34;
+                const FIXED_CHROME = 60; // sumbu-x + padding atas-bawah
+                const desiredHeight = combined.length * PX_PER_BAR + FIXED_CHROME;
+                wrapEl.style.height = Math.max(260, desiredHeight) + 'px';
 
                 new Chart(canvasEl, {
                     type: 'bar',
                     data: {
                         labels,
-                        datasets: [
-                            {
-                                label: '5 Tertinggi',
-                                data: topValues,
-                                backgroundColor: blueColor,
-                                borderRadius: 6,
-                                barPercentage: 0.85,
-                                categoryPercentage: 0.7
-                            },
-                            {
-                                label: '5 Terendah',
-                                data: bottomValues,
-                                backgroundColor: goldColor,
-                                borderRadius: 6,
-                                barPercentage: 0.85,
-                                categoryPercentage: 0.7
-                            }
-                        ]
+                        datasets: [{
+                            label: 'Realisasi (%)',
+                            data: values,
+                            backgroundColor: colors,
+                            borderRadius: 6,
+                            barPercentage: 0.85,
+                            categoryPercentage: 0.85
+                        }]
                     },
                     options: {
                         indexAxis: 'y',
@@ -384,15 +386,12 @@
                         maintainAspectRatio: false,
                         layout: { padding: { right: 16 } },
                         plugins: {
-                            legend: { display: true, position: 'bottom', labels: { boxWidth: 12, padding: 16 } },
-                            tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${ctx.parsed.x}%` } }
+                            legend: { display: false }, // pakai legenda kustom di HTML (2 warna)
+                            tooltip: { callbacks: { label: ctx => `${ctx.parsed.x}%` } }
                         },
                         scales: {
                             x: { beginAtZero: true, max: 100, ticks: { callback: v => v + '%' } },
-                            y: {
-                                stacked: false,
-                                ticks: { autoSkip: false, font: { size: 12 } }
-                            }
+                            y: { ticks: { autoSkip: false, font: { size: 12 } } }
                         }
                     }
                 });
