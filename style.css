@@ -559,21 +559,45 @@ button:disabled { cursor: not-allowed; }
 }
 
 /* Varian untuk kartu "Realisasi per OPD" - jumlah OPD bisa banyak,
-   jadi tinggi canvas diatur dinamis lewat JS dan area ini di-scroll
-   secara vertikal, bukan dipaksa 100% seperti kartu chart lainnya. */
+   jadi tinggi KONTAINER (bukan canvas) diatur dinamis lewat JS
+   (lihat renderRingkasan di index.html). Canvas mengikuti 100% seperti
+   kartu chart lainnya - tidak ada lagi override height:auto yang
+   sebelumnya menimpa perhitungan tinggi dari JS. */
 .stat-card__body--scroll {
     height: auto;
+    min-height: 260px;
     max-height: 640px;
     overflow-y: auto;
     overflow-x: hidden;
 }
 
-.stat-card__body--scroll canvas {
-    height: auto !important; /* dikendalikan lewat inline style dari JS */
-}
-
 .stat-card--wide {
     grid-column: 1 / -1;
+}
+
+/* Legenda kustom untuk kartu Realisasi per OPD (2 warna: tertinggi/terendah) */
+.stat-card__legend {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin-bottom: 0.9rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--gray-600);
+}
+
+.stat-card__legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.stat-card__legend-dot {
+    width: 11px;
+    height: 11px;
+    border-radius: 3px;
+    display: inline-block;
+    flex-shrink: 0;
 }
 
 .stat-card__state {
