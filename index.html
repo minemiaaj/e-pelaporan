@@ -68,8 +68,8 @@
             </div>
 
             <div class="card-grid">
-                <!-- Card 1: Analisis Capaian -->
-                <article class="card card--analisis fade-up">
+                <!-- Card 1: Analisis Capaian (Nalar) - sedang dalam perbaikan, jadi "Segera Hadir" -->
+                <article class="card card--analisis card--placeholder fade-up">
                     <div class="card__accent" aria-hidden="true"></div>
                     <div class="card__icon">
                         <svg viewBox="0 0 56 56" fill="none">
@@ -81,17 +81,17 @@
                         </svg>
                     </div>
                     <div class="card__body">
-                        <span class="card__label">Nalar</span>
+                        <span class="card__label card__label--soon">Segera Hadir</span>
                         <h3 class="card__title">Analisis Capaian Kinerja Pembangunan Daerah</h3>
-                        <p class="card__desc">Telusuri dan analisis data capaian pembangunan daerah secara mendalam dengan dukungan sistem <em>Nalar</em> yang cerdas dan terstruktur.</p>
+                        <p class="card__desc">Telusuri dan analisis data capaian pembangunan daerah secara mendalam dengan dukungan sistem <em>Nalar</em> yang cerdas dan terstruktur. Layanan ini sedang dalam perbaikan.</p>
                     </div>
-                    <a href="https://nalar-biroadbangsultra-prov.freedev.app" target="_blank" rel="noopener noreferrer" class="card__cta">
-                        Akses Nalar
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M7 17L17 7"/>
-                            <polyline points="7 7 17 7 17 17"/>
+                    <button class="card__cta card__cta--disabled" disabled>
+                        Segera Hadir
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="11" width="18" height="11" rx="2"/>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
                         </svg>
-                    </a>
+                    </button>
                 </article>
 
                 <!-- Card 2: Pelaporan Capaian -->
@@ -202,7 +202,7 @@
                 <p>Biro Administrasi Pembangunan<br>Sekretariat Daerah Provinsi Sulawesi Tenggara</p>
             </div>
             <div class="footer__nav">
-                <a href="https://nalar-biroadbangsultra-prov.freedev.app" target="_blank" rel="noopener">Nalar</a>
+                <span class="footer__placeholder">Nalar (soon)</span>
                 <span class="footer__separator">·</span>
                 <a href="https://sirekon-biroadbangsultra-prov.freedev.app" target="_blank" rel="noopener">SiREKON</a>
                 <span class="footer__separator">·</span>
@@ -270,7 +270,7 @@
         // jadi tidak ada lagi isu blokir anti-bot / CORS yang perlu diakali.
         const SUPABASE_URL      = 'https://hnjggapufkaunajieuln.supabase.co'; // TODO: ganti sesuai project Supabase
         const SUPABASE_ANON_KEY = 'sb_publishable_OL1jZLyqyZmCO29xhVKKCA_26xxwvDo';       // TODO: ganti - ini aman ditaruh di frontend (read-only)
-
+        
         const goldColor = '#c2943b';
         const blueColor = '#0f3d6b';
         const blueLight = '#1d659e';
