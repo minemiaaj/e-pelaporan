@@ -167,29 +167,6 @@
             </div>
 
             <div class="stats-grid">
-                <!-- Kartu 1: Pagu vs Realisasi per OPD (lebar penuh - datanya bisa banyak) -->
-                <div class="stat-card stat-card--wide fade-up">
-                    <div class="stat-card__head">
-                        <h3 class="stat-card__title">Realisasi Anggaran per OPD (5 Tertinggi &amp; Terendah)</h3>
-                        <span class="stat-card__period" id="stat-ringkasan-periode">&nbsp;</span>
-                    </div>
-                    <div class="stat-card__legend">
-                        <span class="stat-card__legend-item">
-                            <span class="stat-card__legend-dot" style="background:#0f3d6b;"></span>
-                            5 Realisasi Tertinggi
-                        </span>
-                        <span class="stat-card__legend-item">
-                            <span class="stat-card__legend-dot" style="background:#c2943b;"></span>
-                            5 Realisasi Terendah
-                        </span>
-                    </div>
-                    <div class="stat-card__body stat-card__body--scroll">
-                        <canvas id="chart-ringkasan" role="img" aria-label="Grafik persentase realisasi anggaran per OPD"></canvas>
-                        <div class="stat-card__state" id="state-ringkasan">Memuat data...</div>
-                    </div>
-                    <div class="stat-card__foot" id="stat-ringkasan-total">&nbsp;</div>
-                </div>
-
                 <!-- Kartu 2: Tren realisasi bulanan -->
                 <div class="stat-card fade-up">
                     <div class="stat-card__head">
@@ -293,7 +270,7 @@
         // jadi tidak ada lagi isu blokir anti-bot / CORS yang perlu diakali.
         const SUPABASE_URL      = 'https://hnjggapufkaunajieuln.supabase.co'; // TODO: ganti sesuai project Supabase
         const SUPABASE_ANON_KEY = 'sb_publishable_OL1jZLyqyZmCO29xhVKKCA_26xxwvDo';       // TODO: ganti - ini aman ditaruh di frontend (read-only)
-        
+
         const goldColor = '#c2943b';
         const blueColor = '#0f3d6b';
         const blueLight = '#1d659e';
@@ -327,78 +304,6 @@
             const rows = await res.json();
             if (!rows.length) throw new Error('Data belum tersedia di Supabase.');
             return rows[0].payload;
-        }
-
-        async function renderRingkasan() {
-            try {
-                const data = await fetchChartData('ringkasan');
-                const top = data.top_opd || [];
-                const bottom = data.bottom_opd || [];
-                if (top.length === 0 && bottom.length === 0) {
-                    setState('state-ringkasan', 'Belum ada data untuk periode ini.');
-                    return;
-                }
-                setState('state-ringkasan', '');
-                document.getElementById('stat-ringkasan-periode').textContent = data.periode_label || '';
-                document.getElementById('stat-ringkasan-total').textContent =
-                    `Total realisasi ${formatRupiah(data.total_realisasi)} dari pagu ${formatRupiah(data.total_pagu)} (${data.persen_realisasi}%)`;
-
-                const canvasEl = document.getElementById('chart-ringkasan');
-                const wrapEl = canvasEl.parentElement; // .stat-card__body--scroll
-
-                // Sisipkan satu baris kosong sebagai pemisah visual antara
-                // kelompok "5 Tertinggi" dan "5 Terendah".
-                const hasBothGroups = top.length > 0 && bottom.length > 0;
-                const combined = hasBothGroups
-                    ? [...top, { opd: '', persen_realisasi: null }, ...bottom]
-                    : [...top, ...bottom];
-
-                // Satu dataset saja (bukan 2 dataset ber-null) supaya setiap batang
-                // mendapat alokasi ruang penuh per kategori - lebih proporsional
-                // dan tidak terlihat kurus/rapat. Warna dibedakan per-indeks.
-                const labels = combined.map(d => d.opd);
-                const values = combined.map(d => d.persen_realisasi);
-                const colors = combined.map((d, i) => (i < top.length ? blueColor : goldColor));
-
-                // Tinggi KONTAINER (bukan canvas) dihitung dari jumlah baris,
-                // supaya semua label OPD pasti muat dan tidak dipotong Chart.js.
-                const PX_PER_BAR = 34;
-                const FIXED_CHROME = 60; // sumbu-x + padding atas-bawah
-                const desiredHeight = combined.length * PX_PER_BAR + FIXED_CHROME;
-                wrapEl.style.height = Math.max(260, desiredHeight) + 'px';
-
-                new Chart(canvasEl, {
-                    type: 'bar',
-                    data: {
-                        labels,
-                        datasets: [{
-                            label: 'Realisasi (%)',
-                            data: values,
-                            backgroundColor: colors,
-                            borderRadius: 6,
-                            barPercentage: 0.85,
-                            categoryPercentage: 0.85
-                        }]
-                    },
-                    options: {
-                        indexAxis: 'y',
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        layout: { padding: { right: 16 } },
-                        plugins: {
-                            legend: { display: false }, // pakai legenda kustom di HTML (2 warna)
-                            tooltip: { callbacks: { label: ctx => `${ctx.parsed.x}%` } }
-                        },
-                        scales: {
-                            x: { beginAtZero: true, max: 100, ticks: { callback: v => v + '%' } },
-                            y: { ticks: { autoSkip: false, font: { size: 12 } } }
-                        }
-                    }
-                });
-            } catch (err) {
-                console.error('Ringkasan error:', err);
-                setState('state-ringkasan', 'Data belum tersedia saat ini.', true);
-            }
         }
 
         async function renderTren() {
@@ -479,13 +384,12 @@
         window.addEventListener('DOMContentLoaded', () => {
             loadChartJs()
                 .then(() => {
-                    renderRingkasan();
                     renderTren();
                     renderStatus();
                 })
                 .catch((err) => {
                     console.error('Chart.js gagal dimuat dari semua CDN:', err);
-                    ['state-ringkasan', 'state-tren', 'state-status'].forEach((id) =>
+                    ['state-tren', 'state-status'].forEach((id) =>
                         setState(id, 'Gagal memuat komponen grafik. Coba muat ulang halaman.', true)
                     );
                 });
